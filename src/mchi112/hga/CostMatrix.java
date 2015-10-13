@@ -27,4 +27,17 @@ public class CostMatrix {
     public int getSize() {
         return this.size;
     }
+
+    public float longestEdgeOf(Tour tour) throws Exception{
+        if (tour.isPartial()) {
+            throw new Exception("Cannot find edge of partial tour: " + tour);
+        }
+        float longest = -1;
+        for (int i = 0; i < tour.getLength(); i++) {
+            int source = tour.get(i);
+            int dest = tour.get((i+1)%tour.getLength());
+            longest = Math.max(longest, getDistance(source, dest));
+        }
+        return longest;
+    }
 }

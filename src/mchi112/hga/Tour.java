@@ -3,6 +3,9 @@ package mchi112.hga;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * TODO: add boolean 'isPartial', and add lazy+memoised fitness calculation for non-partial tours
+ */
 public class Tour {
     private int maxLength;
     private List<Integer> tour;
@@ -30,6 +33,10 @@ public class Tour {
         return visited[node-1];
     }
 
+    public Integer get(int index) {
+        return tour.get(index);
+    }
+
     public Integer getLatestNode() {
         if (tour.size() == 0) {
             return null;
@@ -39,6 +46,10 @@ public class Tour {
 
     public int getLength() {
         return this.tour.size();
+    }
+
+    public boolean isPartial() {
+        return this.tour.size() != maxLength;
     }
 
     @Override

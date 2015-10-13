@@ -16,42 +16,64 @@ public class SCS {
     private AlphabetTable alphabetTable;
     private float overallLowerBound;
     private float[] probSelection;
-    private float probSelectionTotal;
 
     private Random random;
-    private int p;
 
     public SCS(int count, CostMatrix costMatrix) {
         this.count = count;
         this.costMatrix = costMatrix;
     }
 
-    /**
-     * NOTE: this will have to be redone so we can easily break up the problem. This means the class will probably have to maintain state.
-     * For each partial tour, maintain a list of nodes that are
-     */
     public List<Tour> generatePopulation() throws Exception {
         // Step 0
         init();
 
-        for (int i = 0; i < this.count; i++) {
+        for (int attempt = 0; attempt < count; attempt++) {
             // Step 1
             Tour tour = new Tour(costMatrix.getSize());
-            p = 1;
-            tour.add(p);
+            tour.add(1);
 
-            // Step 2
-            Integer next = getProbabilisticNextNode(tour);
+            for (int i = 0; i < this.count-1; i++) {
+                // Step 2
+                Integer next = getProbabilisticNextNode(tour);
+                // Step 3
+                float blockLeaderBound = calculateBlockLeaderBound(tour, next);
 
-            // Step 3
-            float blockLeaderBound = calculateBlockLeaderBound(tour, next);
-
-            // Step 4
-            if (blockLeaderBound >= bestSolution) {
-
-            }
-            else {
-                
+                // Step 4
+                if (blockLeaderBound >= bestSolution) {
+                    // Step 5
+                    if (i == this.count - 2){
+                        // Ran out of attempts. Generate another tour from scratch.
+                        break;
+                    }
+                    continue;
+                } else {
+                    // Step 4: part B
+                    tour.add(next);
+                    i = -1; // Reset loop for searching next node in the tour
+                    // Step 6
+                    if (!tour.isPartial()) {
+                        population.add(tour);
+                        float longestEdge = costMatrix.longestEdgeOf(tour);
+                        // Step 7
+                        if (longestEdge < bestSolution) {
+                            bestSolution = longestEdge;
+                            // In the SCS paper, we normally stop and return the population here, but
+                            // we modify this for the full blown HGA as the SCS paper only uses this algorithm
+                            // to generate solutions immediately without using GA
+                        }
+                        else {
+                            // Step 9
+                            if (population.size() == this.count) {
+                                return population;
+                            }
+                        }
+                        break;
+                    }
+                    else {
+                        // Step 8: do nothing
+                    }
+                }
             }
         }
 
@@ -66,46 +88,59 @@ public class SCS {
 
         // Generate probability of selection from each column
         this.probSelection = new float[costMatrix.getSize()];
-        this.probSelectionTotal = 0;
         for (int i = 0; i < alphabetTable.getSize(); i++) {
             float prob = (float)(2 * (alphabetTable.getSize() - (i + 1.0) + 1)) / (alphabetTable.getSize() * (alphabetTable.getSize() + 1));
             probSelection[i] = prob;
-            probSelectionTotal += prob;
         }
 
         this.random = new Random();
     }
 
     /**
-     * TODO: Very unoptimised at the moment. We could optimise this by recalculating the probabilities for remaining nodes only
-     * TODO: so we don't have to keep rolling the dice until we get a legit node.
+     * A slight modification to Ahmed's algorithm that achieves the same effect with far less redundant checks
      */
     private Integer getProbabilisticNextNode(Tour tour) throws Exception {
-        float randomVal = (float)(random.nextDouble() * probSelectionTotal);
-        int i = 0;
+        if (!tour.isPartial()) {
+            throw new Exception("This should not be called! Tour " + tour + " is already complete!");
+        }
+        List<NodeValuePair> legitNodes = new LinkedList<NodeValuePair>();
+        List<Float> cumulativeProb = new LinkedList<Float>();
 
-        while (randomVal >= 0) {
-            NodeValuePair nvp = alphabetTable.getNodeValuePair(tour.getLatestNode(), i);
-            randomVal -= probSelection[i];
-            if (randomVal < 0) {
-                if (tour.isVisitedAlready(nvp.getNode())) {
-                    // Reroll
-                    randomVal = (float)(random.nextDouble() * probSelectionTotal);
-                    i = 0;
-                }
-                else {
-                    return nvp.getNode();
-                }
+        for (int i = 0; i < alphabetTable.getSize(); i++) {
+            if (!tour.isVisitedAlready(alphabetTable.getNodeValuePair(tour.getLatestNode(), i).getNode())) {
+                legitNodes.add(alphabetTable.getNodeValuePair(tour.getLatestNode(), i));
+                cumulativeProb.add(cumulativeProb.size() == 0 ?
+                        probSelection[i] :
+                        probSelection[i] + cumulativeProb.get(cumulativeProb.size() - 1));
+            }
+        }
+        float randomVal = (float)(random.nextDouble() * cumulativeProb.get(cumulativeProb.size()-1));
+
+        int i = 0;
+        while (randomVal > cumulativeProb.get(i)) {
+            if (i < cumulativeProb.size() - 1) {
+                i++;
             }
             else {
-                i++;
+                break;
+            }
+        }
+        return legitNodes.get(i).getNode();
+    }
+
+    private float calculateBlockLeaderBound(Tour partial, int node) throws Exception {
+        float maxVal = -1;
+        for (int i = 0; i < alphabetTable.getSize(); i++) {
+            if (!partial.isVisitedAlready(i+1)) {
+                maxVal = alphabetTable.getNodeValuePair(i+1, 0).getValue() > maxVal ?
+                        alphabetTable.getNodeValuePair(i+1, 0).getValue() :
+                        maxVal;
             }
         }
 
-        throw new Exception("This should not be reached.");
-    }
-
-    private float calculateBlockLeaderBound(Tour partial, int node) {
-        return 50; // TODO: placeholder
+        if (maxVal == -1) {
+            throw new Exception("maxVal should not be -1! This was called when the tour was already complete");
+        }
+        return maxVal;
     }
 }
