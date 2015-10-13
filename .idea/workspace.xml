@@ -69,12 +69,12 @@
       <file leaf-file-name="SCS.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/mchi112/hga/SCS.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6025825">
-              <caret line="41" column="12" selection-start-line="41" selection-start-column="12" selection-end-line="41" selection-end-column="12" />
+            <state vertical-scroll-proportion="0.83931136">
+              <caret line="53" column="16" selection-start-line="53" selection-start-column="16" selection-end-line="53" selection-end-column="16" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#2985#2986#0" expanded="true" />
-                <element signature="e#3031#3032#0" expanded="true" />
+                <element signature="e#3353#3354#0" expanded="true" />
+                <element signature="e#3399#3400#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -552,8 +552,8 @@
           <caret line="40" column="0" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#2985#2986#0" expanded="true" />
-            <element signature="e#3031#3032#0" expanded="true" />
+            <element signature="e#3353#3354#0" expanded="true" />
+            <element signature="e#3399#3400#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -612,8 +612,8 @@
           <caret line="40" column="0" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#2985#2986#0" expanded="true" />
-            <element signature="e#3031#3032#0" expanded="true" />
+            <element signature="e#3353#3354#0" expanded="true" />
+            <element signature="e#3399#3400#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -680,12 +680,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/mchi112/hga/SCS.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6025825">
-          <caret line="41" column="12" selection-start-line="41" selection-start-column="12" selection-end-line="41" selection-end-column="12" />
+        <state vertical-scroll-proportion="0.83931136">
+          <caret line="53" column="16" selection-start-line="53" selection-start-column="16" selection-end-line="53" selection-end-column="16" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#2985#2986#0" expanded="true" />
-            <element signature="e#3031#3032#0" expanded="true" />
+            <element signature="e#3353#3354#0" expanded="true" />
+            <element signature="e#3399#3400#0" expanded="true" />
           </folding>
         </state>
       </provider>

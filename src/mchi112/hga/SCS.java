@@ -39,8 +39,20 @@ public class SCS {
             Tour tour = new Tour(costMatrix.getSize());
             p = 1;
             tour.add(p);
-            
-            System.out.println(getProbabilisticNextNode(tour));
+
+            // Step 2
+            Integer next = getProbabilisticNextNode(tour);
+
+            // Step 3
+            float blockLeaderBound = calculateBlockLeaderBound(tour, next);
+
+            // Step 4
+            if (blockLeaderBound >= bestSolution) {
+
+            }
+            else {
+                
+            }
         }
 
         return null;
@@ -64,11 +76,14 @@ public class SCS {
         this.random = new Random();
     }
 
+    /**
+     * TODO: Very unoptimised at the moment. We could optimise this by recalculating the probabilities for remaining nodes only
+     * TODO: so we don't have to keep rolling the dice until we get a legit node.
+     */
     private Integer getProbabilisticNextNode(Tour tour) throws Exception {
         float randomVal = (float)(random.nextDouble() * probSelectionTotal);
         int i = 0;
 
-        // This could be written better (doesn't handle edge cases if any( but we'll leave it for now
         while (randomVal >= 0) {
             NodeValuePair nvp = alphabetTable.getNodeValuePair(tour.getLatestNode(), i);
             randomVal -= probSelection[i];
