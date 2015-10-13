@@ -40,10 +40,13 @@ public class Program {
             System.out.println(alphabetTable.getNodeValuePair(7, 6));
             System.out.println(alphabetTable.getOverallLowerBound());
 
+            SCS scs = new SCS(100, costMatrix);
+            scs.generatePopulation();
+
             System.out.println("Success");
         }
         catch (Exception e) {
-            System.out.println("Something went wrong");
+            e.printStackTrace();
         }
     }
 }
