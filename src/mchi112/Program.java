@@ -1,25 +1,19 @@
 package mchi112;
 
-import mchi112.hga.AlphabetTable;
 import mchi112.hga.CostMatrix;
 import mchi112.hga.SCS;
 import mchi112.hga.Tour;
+
+import java.util.List;
 
 /**
  * We assume that nodes are labelled by ints starting from 1
  */
 public class Program {
-    private final int POPULATION_SIZE = 100;
+    private static final int POPULATION_SIZE = 100;
 
     public static void main(String[] args) {
         try {
-            // Test tour (1, 2, 3, 4, 5)
-            Tour tour = new Tour(5);
-            for (int i = 0; i < 5; i++) {
-                tour.add(i + 1);
-            }
-            System.out.println(tour);
-
             // Test cost matrix 999.0
             int[][] matrix =
                     {{999, 77, 99, 9, 35, 63, 8},
@@ -30,20 +24,22 @@ public class Program {
                             {63, 29, 35, 53, 76, 999, 52},
                             {8, 20, 28, 49, 72, 52, 999}};
             CostMatrix costMatrix = new CostMatrix(matrix);
-            System.out.println(costMatrix.getDistance(1, 1));
 
-            // Test alphabet table
-            AlphabetTable alphabetTable = new AlphabetTable(costMatrix);
-            System.out.println(alphabetTable.getNodeValuePair(1, 0));
-            System.out.println(alphabetTable.getNodeValuePair(7, 0));
-            System.out.println(alphabetTable.getNodeValuePair(4, 4));
-            System.out.println(alphabetTable.getNodeValuePair(7, 6));
-            System.out.println(alphabetTable.getOverallLowerBound());
+            SCS scs = new SCS(POPULATION_SIZE, costMatrix);
+            List<Tour> population = scs.generatePopulation();
+            Tour bestTour = null;
+            for (Tour t : population) {
+                System.out.println(t + " - longest edge: " + costMatrix.longestEdgeOf(t));
+                if (bestTour == null || costMatrix.longestEdgeOf(t) < costMatrix.longestEdgeOf(bestTour)) {
+                    bestTour = t;
+                }
+            }
 
-            System.out.println("Success");
+            System.out.println("Program complete, best tour is " + bestTour + " with longest edge " + costMatrix.longestEdgeOf(bestTour));
+            System.out.println("Population size: " + population.size());
         }
         catch (Exception e) {
-            System.out.println("Something went wrong");
+            e.printStackTrace();
         }
     }
 }
