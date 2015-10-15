@@ -33,7 +33,7 @@ public class SCS {
             Tour tour = new Tour(costMatrix.getSize());
             tour.add(1);
 
-            for (int i = 0; i < this.count-1; i++) {
+            for (int i = 0; i < this.count; i++) {
                 // Step 2
                 Integer next = getProbabilisticNextNode(tour);
                 // Step 3

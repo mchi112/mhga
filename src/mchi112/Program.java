@@ -10,7 +10,7 @@ import java.util.List;
  * We assume that nodes are labelled by ints starting from 1
  */
 public class Program {
-    private static final int POPULATION_SIZE = 100;
+    private static final int POPULATION_SIZE = 5;
 
     public static void main(String[] args) {
         try {
@@ -36,6 +36,8 @@ public class Program {
             }
 
             System.out.println("Program complete, best tour is " + bestTour + " with longest edge " + costMatrix.longestEdgeOf(bestTour));
+            Tour localSearched = bestTour.localSearch(costMatrix);
+            System.out.println("Local search yields " + localSearched + " with longest edge " + costMatrix.longestEdgeOf(localSearched));
             System.out.println("Population size: " + population.size());
         }
         catch (Exception e) {

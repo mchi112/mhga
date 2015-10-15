@@ -1,13 +1,14 @@
 package mchi112.hga;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
 /**
  * TODO: add boolean 'isPartial', and add lazy+memoised fitness calculation for non-partial tours
  */
-public class Tour {
+public class Tour implements Iterable<Integer> {
     private int maxLength;
     private List<Integer> tour;
     private boolean[] visited;
@@ -16,6 +17,18 @@ public class Tour {
         this.maxLength = maxLength;
         this.tour = new ArrayList<Integer>();
         this.visited = new boolean[maxLength];
+    }
+
+    public Tour(Iterable<Integer> nodes) {
+        tour = new ArrayList<Integer>();
+        for (Integer node : nodes) {
+            tour.add(node);
+        }
+        this.maxLength = tour.size();
+        this.visited = new boolean[this.maxLength];
+        for (int i = 0; i < this.visited.length; i++) {
+            this.visited[i] = true;
+        }
     }
 
     public void add(Integer node) throws Exception {
@@ -27,6 +40,73 @@ public class Tour {
         }
         tour.add(node);
         visited[node-1] = true;
+    }
+
+    // This method is probably better off in CostMatrix but w/e
+    public Tour localSearch(CostMatrix costMatrix) throws Exception {
+        Tour best = makeCopy();
+
+        List<Integer> mutatedList;
+        Tour mutated;
+        for (int i = 1; i < maxLength-1; i++) {
+            for (int j = i+1; j < maxLength; j++) {
+                // Check insert
+                mutatedList = best.getTourListCopy();
+                mutatedList.add(j, mutatedList.get(i));
+                mutatedList.remove(i);
+                mutated = new Tour(mutatedList);
+                if (costMatrix.longestEdgeOf(mutated) < costMatrix.longestEdgeOf(best)) {
+                    best = mutated;
+                }
+
+                // Invert sublist
+                mutatedList = best.getTourListCopy();
+                int iterCount = (i-j) % 2 == 0 ? (i-j)/2 : ((i-j)/2)+1;
+                for (int a = 0; a < iterCount; a++) {
+                    Integer tmp = mutatedList.get(i+a);
+                    mutatedList.set(i+a, mutatedList.get(j-a));
+                    mutatedList.set(j-a, tmp);
+                }
+                mutated = new Tour(mutatedList);
+                if (costMatrix.longestEdgeOf(mutated) < costMatrix.longestEdgeOf(best)) {
+                    best = mutated;
+                }
+
+                // Swap mutation
+                mutatedList = best.getTourListCopy();
+                mutated = new Tour(mutatedList);
+                mutated.swap(i, j);
+                if (costMatrix.longestEdgeOf(mutated) < costMatrix.longestEdgeOf(best)) {
+                    best = mutated;
+                }
+            }
+        }
+
+        return best;
+    }
+
+    public List<Integer> getTourListCopy() {
+        List<Integer> copy = new ArrayList<Integer>();
+        for (Integer node : tour) {
+            copy.add(node);
+        }
+        return copy;
+    }
+
+    public Tour makeCopy() throws Exception {
+        Tour copy = new Tour(maxLength);
+        for (Integer node : tour) {
+            copy.add(node);
+        }
+        return copy;
+    }
+
+    public Tour makeCopy(Tour other) throws Exception {
+        Tour copy = new Tour(maxLength);
+        for (Integer node : other) {
+            copy.add(node);
+        }
+        return copy;
     }
 
     // Naive implementation, for now
@@ -88,5 +168,10 @@ public class Tour {
         }
         sb.append(")");
         return sb.toString();
+    }
+
+    @Override
+    public Iterator<Integer> iterator() {
+        return tour.iterator();
     }
 }
