@@ -42,6 +42,13 @@ public class Tour {
             second = random.nextInt((maxLength));
         } while (second == first);
 
+        swap(first, second);
+    }
+
+    private void swap(Integer first, Integer second) throws Exception {
+        if (first == second) {
+            throw new Exception("Cannot swap the same node. This does nothing");
+        }
         Integer tmp = tour.get(first);
         tour.set(first, tour.get(second));
         tour.set(second, tmp);
