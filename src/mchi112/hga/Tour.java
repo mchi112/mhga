@@ -2,6 +2,7 @@ package mchi112.hga;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * TODO: add boolean 'isPartial', and add lazy+memoised fitness calculation for non-partial tours
@@ -26,7 +27,24 @@ public class Tour {
         }
         tour.add(node);
         visited[node-1] = true;
+    }
 
+    // Naive implementation, for now
+    public void mutate() throws Exception {
+        if (this.isPartial()) {
+            throw new Exception("Cannot mutate a partial tour: " + this);
+        }
+        Random random = new Random();
+        int first = random.nextInt((maxLength));
+        int second;
+        do {
+            // Yeah, this looks bad
+            second = random.nextInt((maxLength));
+        } while (second == first);
+
+        Integer tmp = tour.get(first);
+        tour.set(first, tour.get(second));
+        tour.set(second, tmp);
     }
 
     public boolean isVisitedAlready(Integer node) {
