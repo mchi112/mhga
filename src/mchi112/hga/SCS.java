@@ -28,7 +28,7 @@ public class SCS {
         // Step 0
         init();
 
-        for (int attempt = 0; attempt < count; attempt++) {
+        while (population.size() < count) {
             // Step 1
             Tour tour = new Tour(costMatrix.getSize());
             tour.add(1);
@@ -78,7 +78,7 @@ public class SCS {
             }
         }
 
-        return null;
+        return population;
     }
 
     private void init() {
