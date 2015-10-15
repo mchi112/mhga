@@ -25,8 +25,8 @@ public class Program {
                             {8, 20, 28, 49, 72, 52, 999}};
             CostMatrix costMatrix = new CostMatrix(matrix);
 
-            SCS scs = new SCS(POPULATION_SIZE, costMatrix);
-            List<Tour> population = scs.generatePopulation();
+            SCS scs = new SCS(costMatrix);
+            List<Tour> population = scs.generatePopulation(POPULATION_SIZE);
             Tour bestTour = null;
             for (Tour t : population) {
                 System.out.println(t + " - longest edge: " + costMatrix.longestEdgeOf(t));

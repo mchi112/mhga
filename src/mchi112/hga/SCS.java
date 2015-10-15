@@ -7,7 +7,6 @@ import java.util.Random;
 public class SCS {
 
     // Initialised by constructor
-    private int count;
     private CostMatrix costMatrix;
 
     // Initialised when population is generated
@@ -19,12 +18,11 @@ public class SCS {
 
     private Random random;
 
-    public SCS(int count, CostMatrix costMatrix) {
-        this.count = count;
+    public SCS(CostMatrix costMatrix) {
         this.costMatrix = costMatrix;
     }
 
-    public List<Tour> generatePopulation() throws Exception {
+    public List<Tour> generatePopulation(int count) throws Exception {
         // Step 0
         init();
 
@@ -33,7 +31,7 @@ public class SCS {
             Tour tour = new Tour(costMatrix.getSize());
             tour.add(1);
 
-            for (int i = 0; i < this.count-1; i++) {
+            for (int i = 0; i < count-1; i++) {
                 // Step 2
                 Integer next = getProbabilisticNextNode(tour);
                 // Step 3
@@ -42,7 +40,7 @@ public class SCS {
                 // Step 4
                 if (blockLeaderBound >= bestSolution) {
                     // Step 5
-                    if (i == this.count - 2){
+                    if (i == count - 2){
                         // Ran out of attempts. Generate another tour from scratch.
                         break;
                     }
@@ -64,7 +62,7 @@ public class SCS {
                         }
                         else {
                             // Step 9
-                            if (population.size() == this.count) {
+                            if (population.size() == count) {
                                 return population;
                             }
                         }
