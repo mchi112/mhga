@@ -71,7 +71,8 @@ public class SCS {
                         break;
                     }
                     else {
-                        // Step 8: do nothing
+                        // Step 8: Node was successfully added but tour is still partial. Reset attempts.
+                        i = -1;
                     }
                 }
             }
