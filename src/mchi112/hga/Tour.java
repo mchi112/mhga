@@ -142,6 +142,10 @@ public class Tour implements Iterable<Integer> {
         return tour.get(index);
     }
 
+    public int indexOf(Integer o) {
+        return tour.indexOf(o);
+    }
+
     public Integer getLatestNode() {
         if (tour.size() == 0) {
             return null;
