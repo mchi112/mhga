@@ -2,6 +2,7 @@ package mchi112;
 
 import mchi112.hga.CostMatrix;
 import mchi112.hga.SCS;
+import mchi112.hga.SRS;
 import mchi112.hga.Tour;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  * We assume that nodes are labelled by ints starting from 1
  */
 public class Program {
-    private static final int POPULATION_SIZE = 5;
+    private static final int POPULATION_SIZE = 500;
 
     public static void main(String[] args) {
         try {
@@ -23,22 +24,41 @@ public class Program {
                             {35, 88, 28, 59, 999, 76, 72},
                             {63, 29, 35, 53, 76, 999, 52},
                             {8, 20, 28, 49, 72, 52, 999}};
-            CostMatrix costMatrix = new CostMatrix(matrix);
+            CostMatrix.init(matrix);
 
-            SCS scs = new SCS(costMatrix);
+            SCS scs = new SCS(CostMatrix.getInstance());
+            SRS srs = new SRS();
+
+
             List<Tour> population = scs.generatePopulation(POPULATION_SIZE);
+
             Tour bestTour = null;
             for (Tour t : population) {
-                System.out.println(t + " - longest edge: " + costMatrix.longestEdgeOf(t));
-                if (bestTour == null || costMatrix.longestEdgeOf(t) < costMatrix.longestEdgeOf(bestTour)) {
+                System.out.println(t + " - longest edge: " + CostMatrix.getInstance().longestEdgeOf(t));
+                if (bestTour == null || CostMatrix.getInstance().longestEdgeOf(t) < CostMatrix.getInstance().longestEdgeOf(bestTour)) {
                     bestTour = t;
                 }
             }
 
-            System.out.println("Program complete, best tour is " + bestTour + " with longest edge " + costMatrix.longestEdgeOf(bestTour));
-            Tour localSearched = bestTour.localSearch(costMatrix);
-            System.out.println("Local search yields " + localSearched + " with longest edge " + costMatrix.longestEdgeOf(localSearched));
+            System.out.println("Program complete, best tour is " + bestTour + " with longest edge " + CostMatrix.getInstance().longestEdgeOf(bestTour));
+            Tour localSearched = bestTour.localSearch(CostMatrix.getInstance());
+            System.out.println("Local search yields " + localSearched + " with longest edge " + CostMatrix.getInstance().longestEdgeOf(localSearched));
             System.out.println("Population size: " + population.size());
+
+
+            List<Tour> newPop = srs.reproduce(population);
+            for (Tour t : newPop) {
+                System.out.println(t + " - longest edge: " + CostMatrix.getInstance().longestEdgeOf(t));
+                if (bestTour == null || CostMatrix.getInstance().longestEdgeOf(t) < CostMatrix.getInstance().longestEdgeOf(bestTour)) {
+                    bestTour = t;
+                }
+            }
+
+            System.out.println("Program complete, best tour is " + bestTour + " with longest edge " + CostMatrix.getInstance().longestEdgeOf(bestTour));
+            localSearched = bestTour.localSearch(CostMatrix.getInstance());
+            System.out.println("Local search yields " + localSearched + " with longest edge " + CostMatrix.getInstance().longestEdgeOf(localSearched));
+            System.out.println("Population size: " + newPop.size());
+
         }
         catch (Exception e) {
             e.printStackTrace();
