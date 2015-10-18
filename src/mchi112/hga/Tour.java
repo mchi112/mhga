@@ -162,6 +162,33 @@ public class Tour implements Iterable<Integer> {
         return this.tour.size() != maxLength;
     }
 
+    public float getFitness() throws Exception {
+        return 1/CostMatrix.getInstance().longestEdgeOf(this);
+    }
+
+    public float getExpectedCount() {
+        return expectedCount;
+    }
+
+    public void setExpectedCount(float expectedCount) {
+        this.expectedCount = expectedCount;
+    }
+
+    @Override
+    public int hashCode() {
+        return tour.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof Tour)) {
+            return false;
+        }
+        Tour t = (Tour)obj;
+
+        return this.tour.equals(t.tour);
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("(");
@@ -175,20 +202,9 @@ public class Tour implements Iterable<Integer> {
         return sb.toString();
     }
 
-    public float getFitness() throws Exception {
-        return 1/CostMatrix.getInstance().longestEdgeOf(this);
-    }
-
     @Override
     public Iterator<Integer> iterator() {
         return tour.iterator();
     }
 
-    public float getExpectedCount() {
-        return expectedCount;
-    }
-
-    public void setExpectedCount(float expectedCount) {
-        this.expectedCount = expectedCount;
-    }
 }

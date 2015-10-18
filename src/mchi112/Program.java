@@ -49,6 +49,7 @@ public class Program {
                 }
             }
             CostMatrix.init(matrix);
+            CostMatrix costMatrix = CostMatrix.getInstance();
 
 
 //            Test cost matrix 999.0
@@ -63,45 +64,78 @@ public class Program {
 
 
 
-            SCS scs = new SCS(CostMatrix.getInstance());
-            SCX scx = new SCX(CostMatrix.getInstance());
+            SCS scs = new SCS(costMatrix);
+            SCX scx = new SCX(costMatrix);
             SRS srs = new SRS();
 
             // Generate initial population
             List<Tour> population = scs.generatePopulation(POPULATION_SIZE);
 
-            // Determine best value
-            Tour bestTour = null;
-            float bestValue = Float.MAX_VALUE;
+            // Determine best solution
+            Tour bestSolutionValue = null;
             for (Tour t : population) {
-                System.out.println(t + " - longest edge: " + CostMatrix.getInstance().longestEdgeOf(t));
-                if (bestTour == null || CostMatrix.getInstance().longestEdgeOf(t) < CostMatrix.getInstance().longestEdgeOf(bestTour)) {
-                    bestTour = t;
-                }
-            }
-            bestValue = CostMatrix.getInstance().longestEdgeOf(bestTour);
-
-            System.out.println("Program complete, best tour is " + bestTour + " with longest edge " + CostMatrix.getInstance().longestEdgeOf(bestTour));
-            Tour localSearched = bestTour.localSearch(CostMatrix.getInstance());
-            System.out.println("Local search yields " + localSearched + " with longest edge " + CostMatrix.getInstance().longestEdgeOf(localSearched));
-            System.out.println("Population size: " + population.size());
-            System.out.println();
-
-
-            // Generate new population
-            List<Tour> newPop = srs.reproduce(population);
-            for (Tour t : newPop) {
-                System.out.println(t + " - longest edge: " + CostMatrix.getInstance().longestEdgeOf(t));
-                if (bestTour == null || CostMatrix.getInstance().longestEdgeOf(t) < CostMatrix.getInstance().longestEdgeOf(bestTour)) {
-                    bestTour = t;
+//                System.out.println(t + " - longest edge: " + CostMatrix.getInstance().longestEdgeOf(t));
+                if (bestSolutionValue == null ||
+                        costMatrix.longestEdgeOf(t) < costMatrix.longestEdgeOf(bestSolutionValue)) {
+                    bestSolutionValue = t;
                 }
             }
 
-            System.out.println("Program complete, best tour is " + bestTour + " with longest edge " + CostMatrix.getInstance().longestEdgeOf(bestTour));
-            localSearched = bestTour.localSearch(CostMatrix.getInstance());
-            System.out.println("Local search yields " + localSearched + " with longest edge " + CostMatrix.getInstance().longestEdgeOf(localSearched));
-            System.out.println("Population size: " + newPop.size());
+            int generation = 0;
+            int immigrationTimer = 2000;
+            while(generation < 10000) {
 
+                // Reproduce
+                population = srs.reproduce(population);
+
+                // Crossover
+                for(int i = 0; i < population.size(); i++) {
+                    int j = (i+1)%population.size();
+
+                    Tour parent1 = population.get(i);
+                    Tour parent2 = population.get(j);
+
+                    if(parent1.equals(parent2)){
+                        continue;
+                    }
+
+                    Tour child = scx.crossover(parent1, parent2);
+                    if(child.getFitness() > parent1.getFitness()) {
+                        population.set(i, child);
+                    }
+                }
+
+                // Mutation
+                for(Tour t : population) {
+                    t.mutate();
+                }
+
+                // Evaluate
+                Tour bestPopulationValue = null;
+                for (Tour t : population) {
+                    if (bestPopulationValue == null ||
+                            costMatrix.longestEdgeOf(t) < costMatrix.longestEdgeOf(bestPopulationValue)) {
+                        bestPopulationValue = t;
+                    }
+                }
+
+                if(costMatrix.longestEdgeOf(bestPopulationValue) < costMatrix.longestEdgeOf(bestSolutionValue)) {
+                    bestPopulationValue = bestPopulationValue.localSearch(CostMatrix.getInstance());
+                    bestSolutionValue = bestPopulationValue;
+                    immigrationTimer = 2000;
+                } else {
+                    if(immigrationTimer == 0) {
+                        // Immigration
+
+                        immigrationTimer = 2000;
+                    }
+                }
+
+                generation++;
+                immigrationTimer--;
+            }
+
+            System.out.println(costMatrix.longestEdgeOf(bestSolutionValue));
         }
         catch (Exception e) {
             e.printStackTrace();

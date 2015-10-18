@@ -7,7 +7,10 @@ public class CostMatrix {
         instance = new CostMatrix(matrix);
     }
 
-    public static CostMatrix getInstance() {
+    public static CostMatrix getInstance() throws Exception{
+        if(instance == null) {
+            throw new Exception("Cost Matrix not initialised.");
+        }
         return instance;
     }
 
