@@ -1,10 +1,21 @@
 package mchi112.hga;
 
 public class CostMatrix {
+
+
+    public static void init(int[][] matrix) throws Exception {
+        instance = new CostMatrix(matrix);
+    }
+
+    public static CostMatrix getInstance() {
+        return instance;
+    }
+
+    private static CostMatrix instance;
     private int[][] matrix;
     private int size;
 
-    public CostMatrix(int[][] matrix) throws Exception {
+    private CostMatrix(int[][] matrix) throws Exception {
         for (int i = 0; i < matrix.length; i++) {
             if (matrix.length != matrix[i].length) {
                 throw new Exception("Cost matrix must be a square matrix");

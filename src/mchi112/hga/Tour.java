@@ -12,6 +12,7 @@ public class Tour implements Iterable<Integer> {
     private int maxLength;
     private List<Integer> tour;
     private boolean[] visited;
+    private float expectedCount;
 
     public Tour(int maxLength) {
         this.maxLength = maxLength;
@@ -174,8 +175,20 @@ public class Tour implements Iterable<Integer> {
         return sb.toString();
     }
 
+    public float getFitness() throws Exception {
+        return 1/CostMatrix.getInstance().longestEdgeOf(this);
+    }
+
     @Override
     public Iterator<Integer> iterator() {
         return tour.iterator();
+    }
+
+    public float getExpectedCount() {
+        return expectedCount;
+    }
+
+    public void setExpectedCount(float expectedCount) {
+        this.expectedCount = expectedCount;
     }
 }
