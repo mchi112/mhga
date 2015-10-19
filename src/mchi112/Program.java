@@ -63,6 +63,7 @@ public class Program {
 //                     {8, 20, 28, 49, 72, 52, 999}};
 
 
+            System.out.println("Cost matrix complete");
 
             SCS scs = new SCS(costMatrix);
             SCX scx = new SCX(costMatrix);
@@ -80,6 +81,10 @@ public class Program {
                     bestSolutionValue = t;
                 }
             }
+
+            System.out.println("Initial population and best solution found");
+            System.out.println("Initial best solution: " + bestSolutionValue);
+            System.out.println("Longest edge: " + costMatrix.longestEdgeOf(bestSolutionValue));
 
             int generation = 0;
             int immigrationTimer = 2000;
@@ -128,14 +133,16 @@ public class Program {
                         // Immigration
 
                         immigrationTimer = 2000;
+                        System.out.println("Performing immigration");
                     }
                 }
 
                 generation++;
                 immigrationTimer--;
             }
-
-            System.out.println(costMatrix.longestEdgeOf(bestSolutionValue));
+            System.out.println("Program complete");
+            System.out.println("Best tour: " + bestSolutionValue);
+            System.out.println("Longest edge: " + costMatrix.longestEdgeOf(bestSolutionValue));
         }
         catch (Exception e) {
             e.printStackTrace();
