@@ -30,7 +30,18 @@ public class SRS {
 
         // Generate select new population
         Random rng = new Random();
+        int stall = 0;
         while(newPopulation.size() < population.size()) {
+
+            // If the population generation is stalling
+            if(stall > population.size()) {
+                for(Tour t : population) {
+                    t.setExpectedCount(t.getExpectedCount() + 0.1f);
+                }
+                stall = 0;
+            }
+
+
             int index = rng.nextInt(population.size());
 
             Tour tour = population.get(index);
@@ -38,6 +49,9 @@ public class SRS {
             if((float)Math.random() < tour.getExpectedCount()) {
                 newPopulation.add(population.get(index));
                 tour.setExpectedCount(tour.getExpectedCount() - 0.5f);
+                stall = 0;
+            } else {
+                stall++;
             }
         }
 

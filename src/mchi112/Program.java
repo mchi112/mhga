@@ -15,6 +15,8 @@ import java.util.List;
 public class Program {
 
     private static final int POPULATION_SIZE = 500;
+    private static final int MAX_GENERATION = 1000;
+    private static final int IMMIGRATION_TIMER = 2000;
     private static final String FILE = "rat99.tsp";
 
     public static void main(String[] args) {
@@ -75,7 +77,6 @@ public class Program {
             // Determine best solution
             Tour bestSolutionValue = null;
             for (Tour t : population) {
-//                System.out.println(t + " - longest edge: " + CostMatrix.getInstance().longestEdgeOf(t));
                 if (bestSolutionValue == null ||
                         costMatrix.longestEdgeOf(t) < costMatrix.longestEdgeOf(bestSolutionValue)) {
                     bestSolutionValue = t;
@@ -87,8 +88,8 @@ public class Program {
             System.out.println("Longest edge: " + costMatrix.longestEdgeOf(bestSolutionValue));
 
             int generation = 0;
-            int immigrationTimer = 2000;
-            while(generation < 10000) {
+            int immigrationTimer = IMMIGRATION_TIMER;
+            while(generation < MAX_GENERATION) {
 
                 // Reproduce
                 population = srs.reproduce(population);
@@ -127,13 +128,12 @@ public class Program {
                 if(costMatrix.longestEdgeOf(bestPopulationValue) < costMatrix.longestEdgeOf(bestSolutionValue)) {
                     bestPopulationValue = bestPopulationValue.localSearch(CostMatrix.getInstance());
                     bestSolutionValue = bestPopulationValue;
-                    immigrationTimer = 2000;
+                    immigrationTimer = IMMIGRATION_TIMER;
                 } else {
                     if(immigrationTimer == 0) {
                         // Immigration
-
-                        immigrationTimer = 2000;
                         System.out.println("Performing immigration");
+                        immigrationTimer = IMMIGRATION_TIMER;
                     }
                 }
 
