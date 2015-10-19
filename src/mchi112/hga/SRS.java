@@ -12,7 +12,7 @@ public class SRS {
 
     public List<Tour> reproduce(List<Tour> population) throws Exception {
 
-        List<Tour> newPopulation = new ArrayList<>();
+        List<Tour> newPopulation = new ArrayList<Tour>();
 
         // Calculate average fitness
         float avgFitness = 0;

@@ -23,7 +23,7 @@ public class Program {
             // Read file and save coordinates
             BufferedReader br = new BufferedReader(new FileReader(new File(FILE)));
             String line;
-            List<Point> coords = new ArrayList<>();
+            List<Point> coords = new ArrayList<Point>();
             boolean start = false;
             while((line = br.readLine()) != null) {
 
