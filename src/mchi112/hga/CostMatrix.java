@@ -7,9 +7,9 @@ public class CostMatrix {
         instance = new CostMatrix(matrix);
     }
 
-    public static CostMatrix getInstance() throws Exception{
+    public static CostMatrix getInstance() {
         if(instance == null) {
-            throw new Exception("Cost Matrix not initialised.");
+            throw new RuntimeException("Cost Matrix not initialised.");
         }
         return instance;
     }
@@ -43,9 +43,9 @@ public class CostMatrix {
         return this.size;
     }
 
-    public float longestEdgeOf(Tour tour) throws Exception{
+    public float longestEdgeOf(Tour tour){
         if (tour.isPartial()) {
-            throw new Exception("Cannot find edge of partial tour: " + tour);
+            throw new RuntimeException("Cannot find edge of partial tour: " + tour);
         }
         float longest = -1;
         for (int i = 0; i < tour.getLength(); i++) {

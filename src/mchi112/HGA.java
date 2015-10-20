@@ -13,7 +13,7 @@ import java.util.Random;
 /**
  * We assume that nodes are labelled by ints starting from 1
  */
-public class Program {
+public class HGA {
 
     private static final int POPULATION_SIZE = 500;
     private static final int MAX_GENERATION = 10000;
@@ -155,7 +155,7 @@ public class Program {
                 generation++;
                 immigrationTimer--;
             }
-            System.out.println("Program complete");
+            System.out.println("HGA complete");
             System.out.println("Best tour: " + bestSolutionValue);
             System.out.println("Longest edge: " + costMatrix.longestEdgeOf(bestSolutionValue));
         }

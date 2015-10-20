@@ -58,7 +58,7 @@ public class SCS {
                         if (longestEdge < bestSolution) {
                             bestSolution = longestEdge;
                             // In the SCS paper, we normally stop and return the population here, but
-                            // we modify this for the full blown HGA as the SCS paper only uses this algorithm
+                            // we modify this for the full blown MPHGA as the SCS paper only uses this algorithm
                             // to generate solutions immediately without using GA
                         }
                         else {
