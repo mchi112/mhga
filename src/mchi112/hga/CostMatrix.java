@@ -3,19 +3,23 @@ package mchi112.hga;
 public class CostMatrix {
 
 
-    public static void init(int[][] matrix) throws Exception {
+    public static void init(float[][] matrix) throws Exception {
         instance = new CostMatrix(matrix);
     }
 
-    public static CostMatrix getInstance() {
+    public static CostMatrix getInstance() throws Exception{
+        if(instance == null) {
+            throw new Exception("Cost Matrix not initialised.");
+        }
         return instance;
     }
 
     private static CostMatrix instance;
-    private int[][] matrix;
+    private float[][] matrix;
     private int size;
 
-    private CostMatrix(int[][] matrix) throws Exception {
+    private CostMatrix(float[][] matrix) throws Exception {
+
         for (int i = 0; i < matrix.length; i++) {
             if (matrix.length != matrix[i].length) {
                 throw new Exception("Cost matrix must be a square matrix");
