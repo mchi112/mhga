@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * We assume that nodes are labelled by ints starting from 1
@@ -15,8 +16,10 @@ import java.util.List;
 public class Program {
 
     private static final int POPULATION_SIZE = 500;
-    private static final int MAX_GENERATION = 1000;
+    private static final int MAX_GENERATION = 10000;
     private static final int IMMIGRATION_TIMER = 2000;
+    private static final float IMMIGRATION_PROPORTION = 0.1f;
+    private static final int IMMIGRATION_NUMBER = (int)(POPULATION_SIZE * IMMIGRATION_PROPORTION);
     private static final String FILE = "rat99.tsp";
 
     public static void main(String[] args) {
@@ -70,6 +73,7 @@ public class Program {
             SCS scs = new SCS(costMatrix);
             SCX scx = new SCX(costMatrix);
             SRS srs = new SRS();
+            Random random = new Random();
 
             // Generate initial population
             List<Tour> population = scs.generatePopulation(POPULATION_SIZE);
@@ -132,7 +136,18 @@ public class Program {
                 } else {
                     if(immigrationTimer == 0) {
                         // Immigration
-                        System.out.println("Performing immigration");
+                        System.out.println("Performing immigration for generation " + generation);
+
+                        for (int i = 0; i < IMMIGRATION_NUMBER; i++) {
+                            int removedIndex = random.nextInt(population.size());
+                            population.remove(removedIndex);
+                        }
+
+                        List<Tour> immigrated = scs.generatePopulation(IMMIGRATION_NUMBER);
+                        for (Tour tour : immigrated) {
+                            population.add(tour);
+                        }
+
                         immigrationTimer = IMMIGRATION_TIMER;
                     }
                 }
