@@ -69,10 +69,10 @@ public class MPHGA {
 
             // Create executor
             ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-            List<Future<MultiProcessResult>> concurrentPopulations = new ArrayList<>();
+            List<Future<MultiProcessResult>> concurrentPopulations = new ArrayList<Future<MultiProcessResult>>();
 
             // Generate initial populations
-            List<Future<MultiProcessResult>> generations = new ArrayList<>();
+            List<Future<MultiProcessResult>> generations = new ArrayList<Future<MultiProcessResult>>();
             for(int i = 0; i < CONCURRENT_POPULATION_COUNT; i++) {
                 generations.add(executor.submit(new PopulationGenerationTask(POPULATION_SIZE)));
             }
@@ -100,7 +100,7 @@ public class MPHGA {
                 if(generationCounter < MAX_GENERATION) {
 
                     // Extract population from MultiProcessResult
-                    List<List<Tour>> populationPool = new ArrayList<>();
+                    List<List<Tour>> populationPool = new ArrayList<List<Tour>>();
                     for(Future<MultiProcessResult> f : concurrentPopulations) {
                         populationPool.add(f.get().getPopulation());
                     }
@@ -108,7 +108,7 @@ public class MPHGA {
                     Migration.mechanism1(MIGRATION_MULTIPLER, populationPool);
                     
                     // Kick off new iteration
-                    List<Future<MultiProcessResult>> newConcurrentPopulations = new ArrayList<>();
+                    List<Future<MultiProcessResult>> newConcurrentPopulations = new ArrayList<Future<MultiProcessResult>>();
                     for(int i = 0; i < concurrentPopulations.size(); i++) {
                         newConcurrentPopulations.add(executor.submit(
                                 new ModifiedGeneticTask(

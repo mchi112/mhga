@@ -21,6 +21,7 @@ public class HGA {
     private static final float IMMIGRATION_PROPORTION = 0.1f;
     private static final int IMMIGRATION_NUMBER = (int)(POPULATION_SIZE * IMMIGRATION_PROPORTION);
     private static final String FILE = "rat99.tsp";
+    private static final int NUM_TESTS = 3;
 
     public static void main(String[] args) {
         try {
@@ -55,19 +56,6 @@ public class HGA {
             }
             CostMatrix.init(matrix);
             CostMatrix costMatrix = CostMatrix.getInstance();
-
-
-//            Test cost matrix 999.0
-//            float[][] matrix =
-//                    {{999, 77, 99, 9, 35, 63, 8},
-//                     {75, 999, 86, 46, 88, 29, 20},
-//                     {99, 86, 999, 16, 28, 35, 28},
-//                     {9, 46, 16, 999, 59, 53, 49},
-//                     {35, 88, 28, 59, 999, 76, 72},
-//                     {63, 29, 35, 53, 76, 999, 52},
-//                     {8, 20, 28, 49, 72, 52, 999}};
-
-
             System.out.println("Cost matrix complete");
 
             SCS scs = new SCS(costMatrix);
@@ -75,89 +63,119 @@ public class HGA {
             SRS srs = new SRS();
             Random random = new Random();
 
-            // Generate initial population
-            List<Tour> population = scs.generatePopulation(POPULATION_SIZE);
+            double[] performanceResultsInSeconds = new double[NUM_TESTS];
+            Tour[] tourResults = new Tour[NUM_TESTS];
 
-            // Determine best solution
-            Tour bestSolutionValue = null;
-            for (Tour t : population) {
-                if (bestSolutionValue == null ||
-                        costMatrix.longestEdgeOf(t) < costMatrix.longestEdgeOf(bestSolutionValue)) {
-                    bestSolutionValue = t;
-                }
-            }
+            for (int testNum = 0; testNum < NUM_TESTS+1; testNum++) {
 
-            System.out.println("Initial population and best solution found");
-            System.out.println("Initial best solution: " + bestSolutionValue);
-            System.out.println("Longest edge: " + costMatrix.longestEdgeOf(bestSolutionValue));
+                long startTime = System.nanoTime();
 
-            int generation = 0;
-            int immigrationTimer = IMMIGRATION_TIMER;
-            while(generation < MAX_GENERATION) {
+                // Generate initial population
+                List<Tour> population = scs.generatePopulation(POPULATION_SIZE);
 
-                // Reproduce
-                population = srs.reproduce(population);
-
-                // Crossover
-                for(int i = 0; i < population.size(); i++) {
-                    int j = (i+1)%population.size();
-
-                    Tour parent1 = population.get(i);
-                    Tour parent2 = population.get(j);
-
-                    if(parent1.equals(parent2)){
-                        continue;
-                    }
-
-                    Tour child = scx.crossover(parent1, parent2);
-                    if(child.getFitness() > parent1.getFitness()) {
-                        population.set(i, child);
-                    }
-                }
-
-                // Mutation
-                for(Tour t : population) {
-                    t.mutate();
-                }
-
-                // Evaluate
-                Tour bestPopulationValue = null;
+                // Determine best solution
+                Tour bestSolutionValue = null;
                 for (Tour t : population) {
-                    if (bestPopulationValue == null ||
-                            costMatrix.longestEdgeOf(t) < costMatrix.longestEdgeOf(bestPopulationValue)) {
-                        bestPopulationValue = t;
+                    if (bestSolutionValue == null ||
+                            costMatrix.longestEdgeOf(t) < costMatrix.longestEdgeOf(bestSolutionValue)) {
+                        bestSolutionValue = t;
                     }
                 }
 
-                if(costMatrix.longestEdgeOf(bestPopulationValue) < costMatrix.longestEdgeOf(bestSolutionValue)) {
-                    bestPopulationValue = bestPopulationValue.localSearch(CostMatrix.getInstance());
-                    bestSolutionValue = bestPopulationValue;
-                    immigrationTimer = IMMIGRATION_TIMER;
-                } else {
-                    if(immigrationTimer == 0) {
-                        // Immigration
-                        System.out.println("Performing immigration for generation " + generation);
+                // System.out.println("Initial population and best solution found");
+                // System.out.println("Initial best solution: " + bestSolutionValue);
+                // System.out.println("Longest edge: " + costMatrix.longestEdgeOf(bestSolutionValue));
 
-                        for (int i = 0; i < IMMIGRATION_NUMBER; i++) {
-                            int removedIndex = random.nextInt(population.size());
-                            population.remove(removedIndex);
+                int generation = 0;
+                int immigrationTimer = IMMIGRATION_TIMER;
+                while (generation < MAX_GENERATION) {
+
+                    // Reproduce
+                    population = srs.reproduce(population);
+
+                    // Crossover
+                    for (int i = 0; i < population.size(); i++) {
+                        int j = (i + 1) % population.size();
+
+                        Tour parent1 = population.get(i);
+                        Tour parent2 = population.get(j);
+
+                        if (parent1.equals(parent2)) {
+                            continue;
                         }
 
-                        List<Tour> immigrated = scs.generatePopulation(IMMIGRATION_NUMBER);
-                        for (Tour tour : immigrated) {
-                            population.add(tour);
+                        Tour child = scx.crossover(parent1, parent2);
+                        if (child.getFitness() > parent1.getFitness()) {
+                            population.set(i, child);
                         }
+                    }
 
+                    // Mutation
+                    for (Tour t : population) {
+                        t.mutate();
+                    }
+
+                    // Evaluate
+                    Tour bestPopulationValue = null;
+                    for (Tour t : population) {
+                        if (bestPopulationValue == null ||
+                                costMatrix.longestEdgeOf(t) < costMatrix.longestEdgeOf(bestPopulationValue)) {
+                            bestPopulationValue = t;
+                        }
+                    }
+
+                    if (costMatrix.longestEdgeOf(bestPopulationValue) < costMatrix.longestEdgeOf(bestSolutionValue)) {
+                        bestPopulationValue = bestPopulationValue.localSearch(CostMatrix.getInstance());
+                        bestSolutionValue = bestPopulationValue;
                         immigrationTimer = IMMIGRATION_TIMER;
-                    }
-                }
+                    } else {
+                        if (immigrationTimer == 0) {
+                            // Immigration
+                            // System.out.println("Performing immigration for generation " + generation);
 
-                generation++;
-                immigrationTimer--;
+                            for (int i = 0; i < IMMIGRATION_NUMBER; i++) {
+                                int removedIndex = random.nextInt(population.size());
+                                population.remove(removedIndex);
+                            }
+
+                            List<Tour> immigrated = scs.generatePopulation(IMMIGRATION_NUMBER);
+                            for (Tour tour : immigrated) {
+                                population.add(tour);
+                            }
+
+                            immigrationTimer = IMMIGRATION_TIMER;
+                        }
+                    }
+
+                    generation++;
+                    immigrationTimer--;
+                }
+                if (testNum == 0) {
+                    System.out.println("Warm up complete");
+                }
+                else {
+                    // We subtract testNum by 1 because we ignore results of iter 0
+                    performanceResultsInSeconds[testNum-1] = (System.nanoTime() - startTime)/1000000000.0;
+                    tourResults[testNum-1] = bestSolutionValue;
+
+                    System.out.println("Test " + (testNum-1) + " complete");
+                }
             }
-            System.out.println("HGA complete");
-            System.out.println("Best tour: " + bestSolutionValue);
-            System.out.println("Longest edge: " + costMatrix.longestEdgeOf(bestSolutionValue));
+
+            System.out.println("Tests complete");
+
+            double avgTime = 0;
+            float avgLongestEdge = 0;
+            for (int testNum = 0; testNum < NUM_TESTS; testNum++) {
+                avgTime += performanceResultsInSeconds[testNum];
+                float longestEdge = costMatrix.longestEdgeOf(tourResults[testNum]);
+                avgLongestEdge += longestEdge;
+                System.out.println("Test " + testNum + ": longestEdge=" + longestEdge + ", time(s)=" + performanceResultsInSeconds[testNum]);
+            }
+            avgTime /= NUM_TESTS;
+            avgLongestEdge /= NUM_TESTS;
+            System.out.println("Final results: avgLongestEdge=" + avgLongestEdge + ", avgTime(s)=" + avgTime);
+
         }
         catch (Exception e) {
             e.printStackTrace();
