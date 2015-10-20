@@ -4,9 +4,9 @@ import java.util.*;
 
 public class Migration {
 
-    public static void mechanism1(float multiplier, List<List<Tour>> subpopulation) throws Exception {
+    public static void mechanism1(float multiplier, List<List<Tour>> subpopulations) throws Exception {
 
-        if (!(subpopulation.size() > 1)) {
+        if (!(subpopulations.size() > 1)) {
             throw new Exception("Migration only possible between two or more subpopulations");
         }
 
@@ -14,15 +14,21 @@ public class Migration {
             throw new Exception("Probability multiplier must be between 0 and 1 inclusive");
         }
 
-        final int POPULATION_SIZE = subpopulation.get(0).size();
+        List<List<Tour>> subpopulationsCopy = new ArrayList<List<Tour>>();
+
+        for (List<Tour> subpopulation : subpopulations) {
+            subpopulationsCopy.add(subpopulation);
+        }
+
+        final int POPULATION_SIZE = subpopulationsCopy.get(0).size();
         
-        float[] fitness = new float[subpopulation.size()];
-        for (int i = 0; i < subpopulation.size(); i++) {
+        float[] fitness = new float[subpopulationsCopy.size()];
+        for (int i = 0; i < subpopulationsCopy.size(); i++) {
             float totalFitness = 0;
-            for (int j = 0; j < subpopulation.get(i).size(); j++) {
-                totalFitness += subpopulation.get(i).get(j).getFitness();
+            for (int j = 0; j < subpopulationsCopy.get(i).size(); j++) {
+                totalFitness += subpopulationsCopy.get(i).get(j).getFitness();
             }
-            fitness[i] = totalFitness / subpopulation.get(i).size();
+            fitness[i] = totalFitness / subpopulationsCopy.get(i).size();
         }
 
         float maxFitness = max(fitness);
@@ -39,20 +45,20 @@ public class Migration {
 
         Random random = new Random();
         List<Tour> migrationPool = new LinkedList<Tour>();
-        for (int i = 0; i < subpopulation.size(); i++) {
-            int subpopulationSize = subpopulation.get(i).size();
+        for (int i = 0; i < subpopulationsCopy.size(); i++) {
+            int subpopulationSize = subpopulationsCopy.get(i).size();
             for (int j = 0; j < proportionTaken[i] * subpopulationSize; j++) {
-                int removedIndex = random.nextInt(subpopulation.get(i).size());
-                migrationPool.add(subpopulation.get(i).remove(removedIndex));
+                int removedIndex = random.nextInt(subpopulationsCopy.get(i).size());
+                migrationPool.add(subpopulationsCopy.get(i).remove(removedIndex));
             }
         }
 
 //        List<List<Tour>> subpopulationList = Arrays.asList(subpopulation);
         while (migrationPool.size() > 0) {
-            int pickedIndex = random.nextInt(subpopulation.size());
-            subpopulation.get(pickedIndex).add(migrationPool.remove(0));
-            if (subpopulation.get(pickedIndex).size() == POPULATION_SIZE) {
-                subpopulation.remove(pickedIndex);
+            int pickedIndex = random.nextInt(subpopulationsCopy.size());
+            subpopulationsCopy.get(pickedIndex).add(migrationPool.remove(0));
+            if (subpopulationsCopy.get(pickedIndex).size() == POPULATION_SIZE) {
+                subpopulationsCopy.remove(pickedIndex);
             }
         }
     }
