@@ -59,7 +59,13 @@ public class Migration {
             }
         }
 
-//        List<List<Tour>> subpopulationList = Arrays.asList(subpopulation);
+        // Some subpopulations did not have members removed
+        for (int i = subpopulationsCopy.size()-1; i >= 0; i--) {
+            if (subpopulationsCopy.get(i).size() == POPULATION_SIZE) {
+                subpopulationsCopy.remove(subpopulations.get(i));
+            }
+        }
+
         while (migrationPool.size() > 0) {
             int pickedIndex = random.nextInt(subpopulationsCopy.size());
             subpopulationsCopy.get(pickedIndex).add(migrationPool.remove(0));

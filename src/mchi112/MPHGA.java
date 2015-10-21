@@ -78,8 +78,8 @@ public class MPHGA {
                         continue;
                     } else if (start) {
                         String[] split = line.trim().split("[\\s]+");
-                        int x = Integer.parseInt(split[1]);
-                        int y = Integer.parseInt(split[2]);
+                        float x = Float.parseFloat(split[1]);
+                        float y = Float.parseFloat(split[2]);
                         coords.add(new Point(x, y));
                     }
                 }
