@@ -147,7 +147,7 @@ public class MPHGA {
                 System.out.println("MPHGA complete");
                 System.out.println("Best tour: " + bestSolutionValue);
                 System.out.println("Longest edge: " + costMatrix.longestEdgeOf(bestSolutionValue));
-                System.out.println("Time taken: " + (t2-t1)/1000/1000);
+                System.out.println("Time taken(s): " + (t2-t1)/1000000000.0);
 
             } while(++multirun < REPEATS);
 
