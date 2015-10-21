@@ -23,17 +23,15 @@ import java.util.concurrent.Future;
  * We assume that nodes are labelled by ints starting from 1
  */
 public class MPHGA {
-
-    private static final int REPEATS = 0;
-
     private static final int CONCURRENT_POPULATION_COUNT = 4;
     private static final int POPULATION_SIZE = 500;
     private static final int MIGRATION_THRESHOLD = 2000;
-    private static final int MIGRATION_MULTIPLER = 1;
+    private static final float MIGRATION_MULTIPLIER = 1.0f;
 
     private static final int MAX_GENERATION = 5 * MIGRATION_THRESHOLD;
 
     private static final String FILE = "rat99.tsp";
+    private static final int NUM_TESTS = 3;
 
     public static void main(String[] args) {
         try {
@@ -67,16 +65,18 @@ public class MPHGA {
                 }
             }
             CostMatrix.init(matrix);
+            CostMatrix costMatrix = CostMatrix.getInstance();
             System.out.println("Cost matrix complete");
 
-            // IF DOING MULTIPLE RUNS...
-            int multirun = 0;
-            do {
+            double[] performanceResultsInSeconds = new double[NUM_TESTS];
+            Tour[] tourResults = new Tour[NUM_TESTS];
+
+            for (int testNum = 0; testNum < NUM_TESTS+1; testNum++) {
                 // Create executor
                 ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
                 List<Future<MultiProcessResult>> concurrentPopulations = new ArrayList<>();
 
-                long t1 = System.nanoTime();
+                long startTime = System.nanoTime();
 
                 // Generate initial populations
                 List<Future<MultiProcessResult>> generations = new ArrayList<>();
@@ -84,7 +84,6 @@ public class MPHGA {
                     generations.add(executor.submit(new PopulationGenerationTask(POPULATION_SIZE)));
                 }
                 waitTillComplete(generations); // wait for them to finish..
-
 
                 // Kick off initial iteration
                 for(int i = 0; i < CONCURRENT_POPULATION_COUNT; i++) {
@@ -111,7 +110,7 @@ public class MPHGA {
                             populationPool.add(f.get().getPopulation());
                         }
                         // Migrate
-                        Migration.mechanism1(MIGRATION_MULTIPLER, populationPool);
+                        Migration.mechanism1(MIGRATION_MULTIPLIER, populationPool);
 
                         // Kick off new iteration
                         List<Future<MultiProcessResult>> newConcurrentPopulations = new ArrayList<>();
@@ -134,7 +133,7 @@ public class MPHGA {
 
                 // Collate result
                 Tour bestSolutionValue = null;
-                CostMatrix costMatrix = CostMatrix.getInstance();
+
                 for (Future<MultiProcessResult> f : concurrentPopulations) {
                     if (bestSolutionValue == null ||
                             costMatrix.longestEdgeOf(f.get().getBestSolutionValue()) < costMatrix.longestEdgeOf(bestSolutionValue)) {
@@ -142,14 +141,33 @@ public class MPHGA {
                     }
                 }
 
-                long t2 = System.nanoTime();
+                long endTime = System.nanoTime();
 
-                System.out.println("MPHGA complete");
-                System.out.println("Best tour: " + bestSolutionValue);
-                System.out.println("Longest edge: " + costMatrix.longestEdgeOf(bestSolutionValue));
-                System.out.println("Time taken(s): " + (t2-t1)/1000000000.0);
+                if (testNum == 0) {
+                    System.out.println("Warm up complete");
+                }
+                else {
+                    // We subtract testNum by 1 because we ignore results of iter 0
+                    performanceResultsInSeconds[testNum-1] = (endTime - startTime)/1000000000.0;
+                    tourResults[testNum-1] = bestSolutionValue;
 
-            } while(++multirun < REPEATS);
+                    System.out.println("Test " + (testNum-1) + " complete");
+                }
+            }
+
+            System.out.println("Tests complete");
+
+            double avgTime = 0;
+            float avgLongestEdge = 0;
+            for (int testNum = 0; testNum < NUM_TESTS; testNum++) {
+                avgTime += performanceResultsInSeconds[testNum];
+                float longestEdge = costMatrix.longestEdgeOf(tourResults[testNum]);
+                avgLongestEdge += longestEdge;
+                System.out.println("Test " + testNum + ": longestEdge=" + longestEdge + ", time(s)=" + performanceResultsInSeconds[testNum]);
+            }
+            avgTime /= NUM_TESTS;
+            avgLongestEdge /= NUM_TESTS;
+            System.out.println("Final results: avgLongestEdge=" + avgLongestEdge + ", avgTime(s)=" + avgTime);
 
         }
         catch (Exception e) {
@@ -159,6 +177,7 @@ public class MPHGA {
 
     public static void waitTillComplete(List<Future<MultiProcessResult>> tasks)
             throws InterruptedException, ExecutionException {
+        /*
         boolean isDone = false;
         while(!isDone) {
             Thread.sleep(100);
@@ -167,6 +186,11 @@ public class MPHGA {
             for(Future<MultiProcessResult> f : tasks) {
                 isDone &= f.isDone();
             }
+        }
+        */
+
+        for (Future<MultiProcessResult> task : tasks) {
+            task.get();
         }
     }
 }
