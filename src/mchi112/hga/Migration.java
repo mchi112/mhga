@@ -21,6 +21,12 @@ public class Migration {
         }
 
         final int POPULATION_SIZE = subpopulationsCopy.get(0).size();
+
+        for (int i = 1; i < subpopulationsCopy.size(); i++) {
+            if (subpopulationsCopy.get(i).size() != POPULATION_SIZE) {
+                throw new Exception("Subpopulations do not have matching sizes: subpop 0 has " + POPULATION_SIZE + ", subpop " + i + " has " + subpopulationsCopy.get(i).size());
+            }
+        }
         
         float[] fitness = new float[subpopulationsCopy.size()];
         for (int i = 0; i < subpopulationsCopy.size(); i++) {
