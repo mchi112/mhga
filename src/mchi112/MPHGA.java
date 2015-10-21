@@ -83,7 +83,7 @@ public class MPHGA {
                 for(int i = 0; i < CONCURRENT_POPULATION_COUNT; i++) {
                     generations.add(executor.submit(new PopulationGenerationTask(POPULATION_SIZE)));
                 }
-                waitTillComplete(generations); // wait for them to finish..
+                join(generations); // wait for them to finish..
 
 
                 // Kick off initial iteration
@@ -99,7 +99,7 @@ public class MPHGA {
                 while (true){
 
                     // Wait till they all finished
-                    waitTillComplete(concurrentPopulations);
+                    join(concurrentPopulations);
                     generationCounter += MIGRATION_THRESHOLD;
 
                     // If still not at max generation and all finished, then migrate
@@ -157,17 +157,13 @@ public class MPHGA {
         }
     }
 
-    public static void waitTillComplete(List<Future<MultiProcessResult>> tasks)
+    public static void join(List<Future<MultiProcessResult>> tasks)
             throws InterruptedException, ExecutionException {
-        boolean isDone = false;
-        while(!isDone) {
-            Thread.sleep(100);
 
-            isDone = true;
-            for(Future<MultiProcessResult> f : tasks) {
-                isDone &= f.isDone();
-            }
+        for(Future<MultiProcessResult> f : tasks) {
+            f.get();
         }
+
     }
 }
 
