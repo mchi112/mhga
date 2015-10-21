@@ -25,7 +25,7 @@ import java.util.concurrent.Future;
 public class MPHGA {
     private static final int CONCURRENT_POPULATION_COUNT = 4;
     private static final int POPULATION_SIZE = 500;
-    private static final int MIGRATION_THRESHOLD = 20;
+    private static final int MIGRATION_THRESHOLD = 2000;
     private static final float MIGRATION_MULTIPLIER = 1.0f;
 
     private static final int MAX_GENERATION = 5 * MIGRATION_THRESHOLD;
@@ -34,21 +34,16 @@ public class MPHGA {
     private static final String SYS_OUT_DIVIDER_LIGHT = "---------------------------";
 
     private static String[] instancesToEvaluate = {
-            "a280"
-            ,"ch150"
-//            ,"gil262"
-//            ,"kroA100"
-//            ,"kroA150"
-//            ,"kroA200"
-//            ,"kroD00"
-//            ,"lin318"
-//            ,"pr144"
-//            ,"pr299"
-//            ,"rat99"
-//            ,"rat195"
-//            ,"rd100"
-//            ,"tsp225"
-//            ,"u159"
+//            "rat30"
+//            ,"kroA40"
+//            ,"kroD50"
+            "rd60"
+            ,"pr70"
+            ,"ch80"
+            ,"kroA90"
+            ,"kroD100"
+            ,"lin110"
+            ,"kroA120"
     };
 
     private static final int NUM_TESTS = 3;
@@ -195,6 +190,7 @@ public class MPHGA {
                 System.out.println("Final results: avgLongestEdge=" + avgLongestEdge + ", avgTime(s)=" + avgTime);
 
             } catch (Exception e) {
+                System.out.println("**********ERROR***** Instance: " + instance);
                 e.printStackTrace();
             }
         }
